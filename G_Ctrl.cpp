@@ -1,11 +1,15 @@
 /*
 Bastian Ruppert
 */
+
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
 #include <termios.h>
 #include <unistd.h>
+
 
 #include "G_Ctrl.h"
 
@@ -56,4 +60,58 @@ namespace EuMax01
       }
   }
 
+  int G_Ctrl::openUart()
+  {
+    int     status = 0;
+    int     fd;
+    struct termios newtio;
+
+    // open the tty
+    fd = open("/dev/ttyUSB0",O_RDWR | O_NOCTTY | O_NONBLOCK);
+    if (fd < 0)
+      {
+	if(this->verbose){
+	  printf(" openUart error opening uart\n");
+	}
+	return fd;
+      }
+
+    // flush serial port
+    status = tcflush(fd, TCIFLUSH);
+    if (status < 0)
+      {
+	if(this->verbose){
+	  printf(" openUart error tcflush\n");
+	}
+	close(fd);
+	return -1;
+      }
+    /* get current terminal state */
+    tcgetattr(fd,&newtio);
+    cfmakeraw(&newtio);
+
+    status = cfsetspeed(&newtio, 115200);
+    if (status < 0)
+      {
+	if(this->verbose){
+	  printf(" openUart error cfsetspeed\n");
+	}
+	close(fd);
+	fd = -1;
+	return fd;
+      }
+
+    // set its new attrigutes
+    status = tcsetattr(fd,TCSANOW,&newtio);
+    if (status < 0)
+      {
+	if(this->verbose){
+	  printf(" openUart error tcsetattr\n");
+	}
+	close(fd);
+	fd = -1;
+	return fd;
+      }
+    return fd;
+  }
 }

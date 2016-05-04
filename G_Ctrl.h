@@ -22,6 +22,7 @@ namespace EuMax01
 
     void setVerbose(int verb);
     void cmdG1(int axis,int range,int velocity);
+    int openUart(void);
   private:
     int verbose;
     int cmdLen;
