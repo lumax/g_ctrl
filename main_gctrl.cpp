@@ -107,6 +107,15 @@ static int get_sdtin(char * buf,int buflen)
     else if(!strncmp("g1x 10",buf,5)){
       pG->cmdG1(nTinyG_X,10,100);
     }
+    else if(!strncmp("g1y -10",buf,6)){
+      pG->cmdG1(nTinyG_Y,-10,100);
+    }
+    else if( (!strncmp("g90",buf,3)) || (!strncmp("G90",buf,3)) ){
+      pG->cmdG((char*)"G90");
+    }
+    else if( (!strncmp("g91",buf,3)) || (!strncmp("G91",buf,3)) ){
+      pG->cmdG((char*)"G91");
+    }
     else if(!strncmp("exit",buf,4)){
       return 1;
     }

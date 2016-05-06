@@ -21,6 +21,7 @@ namespace EuMax01
   {
     this->setVerbose(verb);
     cmdLen = 64;
+    fd = -1;
   }
 
   void G_Ctrl::setVerbose(int verb)
@@ -47,6 +48,15 @@ namespace EuMax01
       };
   }
 
+  void G_Ctrl::cmdG(char* gCode)
+  {
+    snprintf(this->cmdBuf,cmdLen,"%s",gCode);
+    if(0!=this->verbose)
+      {
+	printf("cmdG1: %s\n",this->cmdBuf);
+      }
+  }
+
   void G_Ctrl::cmdG1(int axis,int range, int velocity)
   {
     char * Axis = 0;
@@ -60,58 +70,67 @@ namespace EuMax01
       }
   }
 
-  int G_Ctrl::openUart()
+  int G_Ctrl::getFd(void)
+  {
+    return this->fd;
+  }
+
+  void G_Ctrl::closeUart()
+  {
+    close(this->fd);
+  }
+
+  int G_Ctrl::openUart(char * path,int baud)
   {
     int     status = 0;
-    int     fd;
     struct termios newtio;
 
     // open the tty
-    fd = open("/dev/ttyUSB0",O_RDWR | O_NOCTTY | O_NONBLOCK);
-    if (fd < 0)
+    this->fd = open(path,O_RDWR | O_NOCTTY | O_NONBLOCK);
+    if (this->fd < 0)
       {
 	if(this->verbose){
-	  printf(" openUart error opening uart\n");
+	  printf("G_Ctrl  openUart error opening uart fd:%i\n",fd);
 	}
-	return fd;
+	return this->fd;
       }
 
     // flush serial port
-    status = tcflush(fd, TCIFLUSH);
+    status = tcflush(this->fd, TCIFLUSH);
     if (status < 0)
       {
 	if(this->verbose){
-	  printf(" openUart error tcflush\n");
+	  printf("G_Ctrl  openUart error tcflush\n");
 	}
-	close(fd);
+	close(this->fd);
 	return -1;
       }
     /* get current terminal state */
-    tcgetattr(fd,&newtio);
+    tcgetattr(this->fd,&newtio);
     cfmakeraw(&newtio);
 
-    status = cfsetspeed(&newtio, 115200);
+    status = cfsetspeed(&newtio, baud);
     if (status < 0)
       {
 	if(this->verbose){
-	  printf(" openUart error cfsetspeed\n");
+	  printf("G_Ctrl  openUart error cfsetspeed\n");
 	}
-	close(fd);
-	fd = -1;
-	return fd;
+	close(this->fd);
+	this->fd = -1;
+	return this->fd;
       }
 
     // set its new attrigutes
-    status = tcsetattr(fd,TCSANOW,&newtio);
+    status = tcsetattr(this->fd,TCSANOW,&newtio);
     if (status < 0)
       {
 	if(this->verbose){
-	  printf(" openUart error tcsetattr\n");
+	  printf("G_Ctrl  openUart error tcsetattr\n");
 	}
-	close(fd);
-	fd = -1;
-	return fd;
+	close(this->fd);
+	this->fd = -1;
+	return this->fd;
       }
-    return fd;
+    return this->fd;
   }
 }

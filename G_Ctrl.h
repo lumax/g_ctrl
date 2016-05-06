@@ -21,13 +21,17 @@ namespace EuMax01
     ~G_Ctrl();
 
     void setVerbose(int verb);
+    void cmdG(char * gCode);
     void cmdG1(int axis,int range,int velocity);
-    int openUart(void);
+    int openUart(char * path,int baud);
+    void closeUart(void);
+    int getFd(void);
   private:
     int verbose;
     int cmdLen;
     char cmdBuf[64];
     char* getAxis(int axis);
+    int fd;
   };
   
 #endif /* __G_CTRL_H__*/
