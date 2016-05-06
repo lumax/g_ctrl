@@ -34,6 +34,7 @@ private:
   int bufLen;
   PollManager* pm;
   PollReader* pr_stdio;
+  PollTimer* pt;
   char buf[1024];
 };
 
@@ -43,6 +44,8 @@ App::App(){
   pr_stdio = new PollReader(this);
   pr_stdio->setReadSource(STDIN_FILENO,(char*)"StandardIO");
   pm->addSource(pr_stdio);
+  pt = new PollTimer(500,this);
+  //pm->addTimer(this->pt);
 }
 
 int App::poll()
