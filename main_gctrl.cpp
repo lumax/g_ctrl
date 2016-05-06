@@ -1,4 +1,5 @@
 //#include <iostream>
+#include <poll.h>
 #include <stdio.h>
 #include <termios.h>
 #include <unistd.h>
@@ -6,17 +7,66 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "LL.h"
+#include "Poll.h"
+
 #include "G_Ctrl.h"
 
 using namespace std;
 using namespace EuMax01;
 
-static int need_exit = 0;
+static int get_sdtin(char * buf,int buflen);
+
+class App:IPollReadListener,IPollTimerListener
+{
+public:
+  App();
+  ~App()
+  {
+    delete(pm);
+    delete(pr_stdio);
+  }
+  virtual void pollReadEvent(PollSource * s);
+  virtual void pollTimerExpired(long us);
+  int poll();
+
+private:
+  int bufLen;
+  PollManager* pm;
+  PollReader* pr_stdio;
+  char buf[1024];
+};
+
+App::App(){
+  bufLen = 1024;
+  pm = new PollManager();
+  pr_stdio = new PollReader(this);
+  pr_stdio->setReadSource(STDIN_FILENO,(char*)"StandardIO");
+  pm->addSource(pr_stdio);
+}
+
+int App::poll()
+{
+  return pm->call_poll();
+}
+
+void App::pollReadEvent(PollSource * ps)
+{
+  if(1==get_sdtin(this->buf,this->bufLen))
+    {
+      this->pm->stopPolling();
+    }
+}
+
+void App::pollTimerExpired(long us)
+{
+  printf("App timerExp %li \n",us);
+}
+
 static int verboseG = 1;
 
-static int get_sdtin(void);
-
 G_Ctrl * pG = 0;
+App * pApp = 0;
 
 static void onExit(int i,void* pv)
 {
@@ -25,24 +75,29 @@ static void onExit(int i,void* pv)
 
 int main(int argc, char *argv[])
 {
-
+  int ret = 0;
   pG = new G_Ctrl(verboseG);
+  pApp = new App();
 
   printf("main_gctrl\n");
+  printf("main_gctrl App poll returns: ");
 
-  while(0==need_exit)
+  ret = pApp->poll();
+
+  printf("%i\n",ret);
+
+  /*while(0==need_exit)
     {
       get_sdtin();
     }
+  */
 
   on_exit(onExit,0);
 }
 
-static int get_sdtin(void)
+static int get_sdtin(char * buf,int buflen)
 {
-  char buf[256];
-
-  if(fgets(buf,256,stdin)!=0){
+  if(fgets(buf,buflen,stdin)!=0){
     if(!strncmp("test",buf,4)){
       printf("test output\n");
     }
@@ -50,7 +105,7 @@ static int get_sdtin(void)
       pG->cmdG1(nTinyG_X,10,100);
     }
     else if(!strncmp("exit",buf,4)){
-      need_exit=1;
+      return 1;
     }
     else{
       printf("supported cmds: exit,test\n");

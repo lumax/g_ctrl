@@ -27,7 +27,7 @@ LDFLAGS+=-ldsp_jpeg
 endif
 endif
 
-OBJS+= main_gctrl.o G_Ctrl.o
+OBJS+= main_gctrl.o G_Ctrl.o Poll.o LL.o
 #dsp_jpeg.o
 #utils.o color.o
 
