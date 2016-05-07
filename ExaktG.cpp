@@ -49,9 +49,13 @@ namespace EuMax01
   {
     char buf[1024];
     int buflen = 1024;
+    int len = 0;
+
+    memset(buf, 0, 1024);
     buf[1023] = '\n';
 
-    if(read(s->thePollfd.fd,buf,buflen-1)){
+    len = read(s->thePollfd.fd,buf,buflen-1);
+    if(len){
       printf("%s\n",buf);
     }
   }

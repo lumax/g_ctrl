@@ -71,7 +71,8 @@ namespace EuMax01
 
     Axis = getAxis(axis);
 
-    snprintf(this->cmdBuf,cmdLen,"G1 %s%i,F%i\r",Axis,range,velocity);
+    ret = snprintf(this->cmdBuf,cmdLen,"G1 %s%i,F%i\r",\
+		   Axis,range,velocity);
     if(0!=this->verbose)
       {
 	printf("cmdG1: %s\n",this->cmdBuf);
