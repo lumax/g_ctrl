@@ -17,6 +17,48 @@ using namespace EuMax01;
 
 static int get_sdtin(char * buf,int buflen);
 
+class G_Listener:IPollReadListener
+{
+public:
+  G_Listener();
+  ~G_Listener(){
+    delete(pr_gcodes);
+  };
+  virtual void (pollReadEvent)(PollSource * s);
+  void setFD(int fd);
+  PollReader* getPollReader(void);
+private:
+  PollReader * pr_gcodes;
+};
+
+G_Listener::G_Listener()
+{
+  pr_gcodes = new PollReader(this);
+}
+
+PollReader * G_Listener::getPollReader(void)
+{
+  return this->pr_gcodes;
+}
+
+void G_Listener::setFD(int fd)
+{
+  this->pr_gcodes->setReadSource(fd,(char*)"G_Listener");
+}
+
+void G_Listener::pollReadEvent(PollSource * s)
+{
+  char buf[1024];
+  int buflen = 1024;
+  buf[1023] = '\n';
+
+  printf("G_Listener::pollReadEvent\n");
+
+  if(read(s->thePollfd.fd,buf,buflen-1)){
+    printf("%s\n",buf);
+  }
+}
+
 class App:IPollReadListener,IPollTimerListener
 {
 public:
@@ -29,6 +71,7 @@ public:
   virtual void pollReadEvent(PollSource * s);
   virtual void pollTimerExpired(long us);
   int poll();
+  void addPollReader(PollReader * pPR);
 
 private:
   int bufLen;
@@ -53,6 +96,11 @@ int App::poll()
   return pm->call_poll();
 }
 
+void App::addPollReader(PollReader * pPR)
+{
+  this->pm->addSource(pPR);
+}
+
 void App::pollReadEvent(PollSource * ps)
 {
   if(1==get_sdtin(this->buf,this->bufLen))
@@ -70,9 +118,14 @@ static int verboseG = 1;
 
 G_Ctrl * pG = 0;
 App * pApp = 0;
+G_Listener * pGLis = 0;
 
 static void onExit(int i,void* pv)
 {
+  if(0!=pG)
+    {
+      pG->closeUart();
+    }
   printf("onExit\n");
 }
 
@@ -81,19 +134,19 @@ int main(int argc, char *argv[])
   int ret = 0;
   pG = new G_Ctrl(verboseG);
   pApp = new App();
+  pGLis = new G_Listener();
 
   printf("main_gctrl\n");
-  printf("main_gctrl App poll returns: ");
+  ret = pG->openUart((char*)"/dev/ttyUSB0",115200);
+  if(ret>0)
+    {
+      pGLis->setFD(pG->getFd());
+      pApp->addPollReader(pGLis->getPollReader());
+    }
+
 
   ret = pApp->poll();
-
-  printf("%i\n",ret);
-
-  /*while(0==need_exit)
-    {
-      get_sdtin();
-    }
-  */
+  printf("main_gctrl App poll returns: %i\n",ret);
 
   on_exit(onExit,0);
 }

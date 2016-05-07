@@ -50,23 +50,36 @@ namespace EuMax01
 
   void G_Ctrl::cmdG(char* gCode)
   {
-    snprintf(this->cmdBuf,cmdLen,"%s",gCode);
+    int ret = 0;
+
+    ret = snprintf(this->cmdBuf,cmdLen,"%s\r",gCode);
     if(0!=this->verbose)
       {
 	printf("cmdG1: %s\n",this->cmdBuf);
+      }
+
+    if(0<this->fd)
+      {
+	write(this->fd,this->cmdBuf,ret);
       }
   }
 
   void G_Ctrl::cmdG1(int axis,int range, int velocity)
   {
+    int ret = 0;
     char * Axis = 0;
 
     Axis = getAxis(axis);
 
-    snprintf(this->cmdBuf,cmdLen,"G1 %s%i,F%i",Axis,range,velocity);
+    snprintf(this->cmdBuf,cmdLen,"G1 %s%i,F%i\r",Axis,range,velocity);
     if(0!=this->verbose)
       {
 	printf("cmdG1: %s\n",this->cmdBuf);
+      }
+
+      if(0<this->fd)
+      {
+	write(this->fd,this->cmdBuf,ret);
       }
   }
 
