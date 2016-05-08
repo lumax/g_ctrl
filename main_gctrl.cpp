@@ -129,6 +129,9 @@ static int get_sdtin(char * buf,int buflen)
     else if( (!strncmp("g91",buf,3)) || (!strncmp("G91",buf,3)) ){
       pG->cmdG((char*)"G91");
     }
+    else if( !strncmp("flowcontrol",buf,11) ){
+      pG->cmdFlowControl();
+    }
     else if(!strncmp("exit",buf,4)){
       return 1;
     }

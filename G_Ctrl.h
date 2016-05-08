@@ -21,6 +21,7 @@ namespace EuMax01
     ~G_Ctrl();
 
     void setVerbose(int verb);
+    void cmdFlowControl(void);
     void cmdG(char * gCode);
     void cmdG1(int axis,int range,int velocity);
     int openUart(char * path,int baud);

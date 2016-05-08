@@ -48,6 +48,22 @@ namespace EuMax01
       };
   }
 
+  void G_Ctrl::cmdFlowControl(void)
+  {
+    int ret = 0;
+    char * flowControl = (char*)"{\"ex\":\"2\"}";
+    ret = snprintf(this->cmdBuf,cmdLen,"%s\r",flowControl);
+    if(0!=this->verbose)
+      {
+	printf("cmdFlowControl: %s\n",this->cmdBuf);
+      }
+
+    if(0<this->fd)
+      {
+	write(this->fd,this->cmdBuf,ret);
+      }
+  }
+
   void G_Ctrl::cmdG(char* gCode)
   {
     int ret = 0;
@@ -133,6 +149,8 @@ namespace EuMax01
 	this->fd = -1;
 	return this->fd;
       }
+
+    newtio.c_cflag |=CRTSCTS; 
 
     // set its new attrigutes
     status = tcsetattr(this->fd,TCSANOW,&newtio);
