@@ -53,11 +53,15 @@ namespace EuMax01
     int buflen = 1024;
     int len = 0;
     int ret = 0;
-    sleep(1);
+    //sleep(1);
     memset(buf, 0, 1024);
     buf[1023] = '\n';
-
+    printf("###\n");
     len = read(s->thePollfd.fd,buf,buflen-1);
+    if(len){
+      printf("%s",buf);
+      return;
+    }
     if(len){
       printf("%s\n",buf);
       ret = jsonParser(buf,len);
