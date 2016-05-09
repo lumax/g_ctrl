@@ -12,6 +12,7 @@
 
 #include "G_Ctrl.h"
 #include "ExaktG.h"
+#include "StreamScanner.h"
 
 using namespace std;
 using namespace EuMax01;
@@ -75,6 +76,7 @@ void App::pollTimerExpired(long us)
 
 static int verboseExakt = 1;
 static int verboseG = 1;
+static void StreamScannerTest(void);
 
 G_Ctrl * pG = 0;
 App * pApp = 0;
@@ -115,7 +117,8 @@ static int get_sdtin(char * buf,int buflen)
 {
   if(fgets(buf,buflen,stdin)!=0){
     if(!strncmp("test",buf,4)){
-      printf("test output\n");
+      printf("StreamScanner test\n");
+      StreamScannerTest();
     }
     else if(!strncmp("g1x 10",buf,5)){
       pG->cmdG1(nTinyG_X,10,100);
@@ -136,8 +139,31 @@ static int get_sdtin(char * buf,int buflen)
       return 1;
     }
     else{
-      printf("supported cmds: exit,test\n");
+      printf("supported cmds: exit,test,g1y 10,g1x 10,g90,g91,flowcontrol\n");
     }
   }
   return 0;
+}
+
+static void ssResult(struct StreamScanner_t * ps)
+{
+  printf("StreamScannter Result\n");
+}
+
+static void StreamScannerTest(void)
+{
+  int len = 0;
+  char * testString = (char*)"{\"sr\":{\"posy\":-1.015}}{\"sr\":{\"posx\":0.000,\"posy\":0.000,\"po";
+  StreamScanner ss = StreamScanner(1);
+  ss.addScanner(nStreamScannerType_float,	\
+		(char*)"\"posx\":",(char*)"}",(char*)",",ssResult);
+  ss.addScanner(nStreamScannerType_float,	\
+		(char*)"\"posy\":",(char*)"}",(char*)",",ssResult);
+
+  len = strlen(testString);
+
+  for(int i = 0;i<len;i++)
+    {
+      ss.scan(testString[i]);
+    }
 }
