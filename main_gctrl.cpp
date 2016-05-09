@@ -11,8 +11,8 @@
 #include "Poll.h"
 
 #include "G_Ctrl.h"
-#include "ExaktG.h"
 #include "StreamScanner.h"
+#include "ExaktG.h"
 
 using namespace std;
 using namespace EuMax01;
@@ -139,7 +139,7 @@ static int get_sdtin(char * buf,int buflen)
       return 1;
     }
     else{
-      printf("supported cmds: exit,test,g1y 10,g1x 10,g90,g91,flowcontrol\n");
+      printf("supported cmds: exit,test,g1y -10,g1x 10,g90,g91,flowcontrol\n");
     }
   }
   return 0;

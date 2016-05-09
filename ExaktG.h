@@ -25,6 +25,7 @@ namespace EuMax01
     PollReader * pr_gcodes;
     int verbose;
     G_Ctrl GCtrl;
+    StreamScanner sScan;
   };
 
 #endif /* __ExaktG_H__*/

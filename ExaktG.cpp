@@ -13,16 +13,31 @@ Bastian Ruppert
 #include "LL.h"
 #include "Poll.h"
 #include "G_Ctrl.h"
+#include "StreamScanner.h"
 
 #include "ExaktG.h"
 
 namespace EuMax01
 {
 
+  static void streamScanResult(struct StreamScanner_t * ps)
+  {
+    printf("StreamScannter Result Int: %i Float: %f\n",	\
+	   ps->scannedInt, ps->scannedFloat);
+  }
+
   ExaktG::ExaktG(int verbExakt,int verbG):GCtrl(verbG)
   {
     pr_gcodes = new PollReader(this);
     this->setVerbose(verbExakt);
+    sScan.addScanner(nStreamScannerType_float,		\
+		     (char*)"\"posx\":",		\
+		     (char*)"}",(char*)",",		\
+		     streamScanResult);
+    sScan.addScanner(nStreamScannerType_float,				\
+		     (char*)"\"posy\":",				\
+		     (char*)"}",(char*)",",				\
+		     streamScanResult);
   }
 
   void ExaktG::setFD(int fd)
@@ -54,11 +69,13 @@ namespace EuMax01
     //sleep(1);
     memset(buf, 0, 1024);
     buf[1023] = '\n';
-    printf("###\n");
+    //printf("###\n");
     len = read(s->thePollfd.fd,buf,buflen-1);
     if(len){
+      for(int i = 0;i<len;i++){
+	this->sScan.scan(buf[i]);
+      }
       printf("%s",buf);
-      return;
     }
   }
 }
