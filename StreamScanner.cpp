@@ -6,19 +6,18 @@ Bastian Ruppert
 //#include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
-#include <errno.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #include "StreamScanner.h"
 
 namespace EuMax01
 {
 
-  StreamScanner::StreamScanner(int verb):maxScans(16),		\
+  StreamScanner::StreamScanner():maxScans(16),			\
 					 maxPayloadLen(16),	\
 					 streamBufLen(256)
   {
-    this->setVerbose(verb);
     scanslen = 0;
   }
 
@@ -31,9 +30,10 @@ namespace EuMax01
 
   inline void StreamScanner::statePayload(char c, int index)
   {
-    if(c == scans[index].pcDelim1[0] || c == scans[index].pcDelim2[0]){
+     if(c == scans[index].pcDelim1[0] || c == scans[index].pcDelim2[0]){
       scans[index].pcStreamBuf[scans[index].len] = '\0';
-      printf("delim: %s found, scanned: %s\n",scans[index].pcDelim1,scans[index].pcStreamBuf);
+      scans[index].scannedInt = atoi(&scans[index].pcStreamBuf[scans[index].preambleLen]);
+      scans[index].scannedFloat = (float)atof(&scans[index].pcStreamBuf[scans[index].preambleLen]);
       if(0 != scans[index].fnkScanResult){
 	(*scans[index].fnkScanResult)(&scans[index]);
       }
@@ -132,10 +132,5 @@ namespace EuMax01
   {
     scans[index].state = nStreamScannerState_preamble;
     scans[index].len = 0;   
-  }
-
-  void StreamScanner::setVerbose(int verb)
-  {
-    this->verbose = verb;    
   }
 }

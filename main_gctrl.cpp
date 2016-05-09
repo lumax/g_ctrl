@@ -147,14 +147,20 @@ static int get_sdtin(char * buf,int buflen)
 
 static void ssResult(struct StreamScanner_t * ps)
 {
-  printf("StreamScannter Result\n");
+  printf("StreamScannter Result Int: %i Float: %f\n",\
+	 ps->scannedInt, ps->scannedFloat);
 }
 
 static void StreamScannerTest(void)
 {
+  FILE * pfile = 0;
   int len = 0;
+  int ret =0;
+  char tmpC;
   char * testString = (char*)"{\"sr\":{\"posy\":-1.015}}{\"sr\":{\"posx\":0.000,\"posy\":0.000,\"po";
-  StreamScanner ss = StreamScanner(1);
+
+  StreamScanner ss = StreamScanner();
+
   ss.addScanner(nStreamScannerType_float,	\
 		(char*)"\"posx\":",(char*)"}",(char*)",",ssResult);
   ss.addScanner(nStreamScannerType_float,	\
@@ -166,4 +172,22 @@ static void StreamScannerTest(void)
     {
       ss.scan(testString[i]);
     }
+
+  pfile=fopen("g_commands.txt","rb");
+  if (!pfile)
+    {
+      printf("StreamScannerTest File\n");
+      return;
+    }
+  ret = fread(&tmpC,1,1,pfile);
+  while(1==ret)
+    {
+      ret = fread(&tmpC,1,1,pfile);
+      ss.scan(tmpC);
+    }
+
+  fclose(pfile);
+  printf("StreamScannerTest File ready\n");
+  return;
+
 }

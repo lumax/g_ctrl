@@ -26,18 +26,17 @@ namespace EuMax01
     char * pcDelim2;//nur ein Zeichen
     char pcStreamBuf[256];
     int len;
-    int payloadInt;
-    float paylaodFloat;
+    int scannedInt;
+    float scannedFloat;
     void (*fnkScanResult)(struct StreamScanner_t *);
   };
 
   class StreamScanner
   {
  public:
-  StreamScanner(int verb);
+  StreamScanner();
   ~StreamScanner(){}
 
-  void setVerbose(int verb);
   void scan(char c);
   int addScanner(int typeToScanFor,			\
     const char * preamble,				\
@@ -46,7 +45,6 @@ namespace EuMax01
     void (*fnkScanRes)(struct StreamScanner_t * pss));
 
   private:
-    int verbose;
     struct StreamScanner_t scans[16];
     int scanslen;
     const int maxScans;//16
