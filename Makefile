@@ -27,7 +27,7 @@ LDFLAGS+=-ldsp_jpeg
 endif
 endif
 
-OBJS+= main_gctrl.o G_Ctrl.o Poll.o LL.o ExaktG.o jsmn.o StreamScanner.o
+OBJS+= main_gctrl.o G_Ctrl.o Poll.o LL.o ExaktG.o StreamScanner.o
 #dsp_jpeg.o
 #utils.o color.o
 
