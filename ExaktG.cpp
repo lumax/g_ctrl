@@ -30,12 +30,36 @@ namespace EuMax01
   {
     pr_gcodes = new PollReader(this);
     this->setVerbose(verbExakt);
+
+    /*"posx":0.000} oder "posx":0.000,*/
     sScan.addScanner(nStreamScannerType_float,		\
+		     (void*)this,			\
+		     nTinyG_X,				\
 		     (char*)"\"posx\":",		\
 		     (char*)"}",(char*)",",		\
 		     streamScanResult);
+
+    /*"posy":0.000} oder "posy":0.000,*/
     sScan.addScanner(nStreamScannerType_float,				\
+		     (void*)this,					\
+		     nTinyG_Y,						\
 		     (char*)"\"posy\":",				\
+		     (char*)"}",(char*)",",				\
+		     streamScanResult);
+
+    /*"posz":0.000} oder "posz":0.000,*/
+    sScan.addScanner(nStreamScannerType_float,				\
+		     (void*)this,					\
+		     nTinyG_Y,						\
+		     (char*)"\"posz\":",				\
+		     (char*)"}",(char*)",",				\
+		     streamScanResult);
+
+    /*"posa":0.000} oder "posa":0.000,*/
+    sScan.addScanner(nStreamScannerType_float,				\
+		     (void*)this,					\
+		     nTinyG_Y,						\
+		     (char*)"\"posa\":",				\
 		     (char*)"}",(char*)",",				\
 		     streamScanResult);
   }

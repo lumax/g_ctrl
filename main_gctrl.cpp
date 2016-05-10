@@ -147,8 +147,15 @@ static int get_sdtin(char * buf,int buflen)
 
 static void ssResult(struct StreamScanner_t * ps)
 {
-  printf("StreamScannter Result Int: %i Float: %f\n",\
-	 ps->scannedInt, ps->scannedFloat);
+  char * Axis;
+
+  if(nTinyG_Y == ps->userID){
+    Axis = (char*)"Y-Achse";
+  }else{
+    Axis = (char*)"X-Achse";
+  }
+
+  printf("%s: %.3f\n",Axis,ps->scannedFloat);
 }
 
 static void StreamScannerTest(void)
@@ -162,8 +169,12 @@ static void StreamScannerTest(void)
   StreamScanner ss = StreamScanner();
 
   ss.addScanner(nStreamScannerType_float,	\
+		0,				\
+		nTinyG_X,			\
 		(char*)"\"posx\":",(char*)"}",(char*)",",ssResult);
   ss.addScanner(nStreamScannerType_float,	\
+		0,				\
+		nTinyG_Y,                       \
 		(char*)"\"posy\":",(char*)"}",(char*)",",ssResult);
 
   len = strlen(testString);

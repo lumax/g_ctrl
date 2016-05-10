@@ -20,6 +20,8 @@ namespace EuMax01
   struct StreamScanner_t{
     int typeToScanFor;
     int state;
+    void * userPnt;
+    int userID;
     const char * pcPreamble;//Startstring
     size_t preambleLen;//Länge Startstring
     char * pcDelim1;//nur ein Zeichen
@@ -39,6 +41,8 @@ namespace EuMax01
 
   void scan(char c);
   int addScanner(int typeToScanFor,			\
+		 void * userPnt,			\
+		 int userID,				\
     const char * preamble,				\
     char * delim1,					\
     char * delim2,\

@@ -78,6 +78,8 @@ namespace EuMax01
   }
 
   int StreamScanner::addScanner(int type,				\
+				void * userPnt,				\
+				int userID,				\
 				const char * preamble,			\
 				char * delim1,				\
 				char * delim2,				\
@@ -104,6 +106,8 @@ namespace EuMax01
     }else{
       scans[this->scanslen].typeToScanFor = nStreamScannerType_float;
     }
+    scans[this->scanslen].userPnt = userPnt;
+    scans[this->scanslen].userID = userID;
     scans[this->scanslen].pcPreamble = preamble;
     scans[this->scanslen].pcDelim1 = delim1;
     scans[this->scanslen].pcDelim2 = delim2;
