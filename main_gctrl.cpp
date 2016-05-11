@@ -135,11 +135,18 @@ static int get_sdtin(char * buf,int buflen)
     else if( !strncmp("flowcontrol",buf,11) ){
       pG->cmdFlowControl();
     }
+    else if( !strncmp("rel",buf,3)){
+      pExaktG->setCoordinatesRelative();
+    }
+    else if( !strncmp("abs",buf,3)){
+      pExaktG->setCoordinatesAbsolute();
+    }
     else if(!strncmp("exit",buf,4)){
       return 1;
     }
     else{
       printf("supported cmds: exit,test,g1y -10,g1x 10,g90,g91,flowcontrol\n");
+      printf("rel,abs\n");
     }
   }
   return 0;

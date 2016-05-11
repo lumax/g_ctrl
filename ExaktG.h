@@ -20,6 +20,8 @@ namespace EuMax01
     void setFD(int fd);
     PollReader* getPollReader(void);
     G_Ctrl * getG_Ctrl(void);
+    void setCoordinatesRelative(void);
+    void setCoordinatesAbsolute(void);
 
   private:
     PollReader * pr_gcodes;

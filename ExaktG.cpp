@@ -22,7 +22,7 @@ namespace EuMax01
 
   static void streamScanResult(struct StreamScanner_t * ps)
   {
-    printf("StreamScannter Result Int: %i Float: %f\n",	\
+    printf("StreamScanner Result Int: %i Float: %f\n",	\
 	   ps->scannedInt, ps->scannedFloat);
   }
 
@@ -82,6 +82,16 @@ namespace EuMax01
   PollReader * ExaktG::getPollReader(void)
   {
     return this->pr_gcodes;
+  }
+
+  void ExaktG::setCoordinatesRelative(void)
+  {
+    GCtrl.cmdG((char*)"G91");
+  }
+
+  void ExaktG::setCoordinatesAbsolute(void)
+  {
+    GCtrl.cmdG((char*)"G90");
   }
 
   void ExaktG::pollReadEvent(PollSource * s)
