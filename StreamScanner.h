@@ -9,7 +9,9 @@ namespace EuMax01
 
   enum StreamScannerTypes{
     nStreamScannerType_int = 0,
-    nStreamScannerType_float = 1
+    nStreamScannerType_float = 1,
+    nStreamScannerType_G_fReturn = 2,
+    nStreamScannerType_LAST_NUMBER
   };
 
   enum StreamScannerStates{

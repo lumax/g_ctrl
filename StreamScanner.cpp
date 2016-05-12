@@ -31,9 +31,19 @@ namespace EuMax01
   inline void StreamScanner::statePayload(char c, int index)
   {
      if(c == scans[index].pcDelim1[0] || c == scans[index].pcDelim2[0]){
-      scans[index].pcStreamBuf[scans[index].len] = '\0';
-      scans[index].scannedInt = atoi(&scans[index].pcStreamBuf[scans[index].preambleLen]);
-      scans[index].scannedFloat = (float)atof(&scans[index].pcStreamBuf[scans[index].preambleLen]);
+       if(nStreamScannerType_int==scans[index].typeToScanFor||\
+	  nStreamScannerType_float==scans[index].typeToScanFor){
+	 scans[index].pcStreamBuf[scans[index].len] = '\0';
+	 scans[index].scannedInt = atoi(&scans[index].pcStreamBuf[scans[index].preambleLen]);
+	 scans[index].scannedFloat =					\
+	   (float)atof(&scans[index].pcStreamBuf[scans[index].preambleLen]);
+       }else{
+	 scans[index].scannedInt = -1;
+	 scans[index].scannedFloat = -1.0;
+       }
+       if(nStreamScannerType_G_fReturn == scans[index].typeToScanFor){
+	 printf("nStreamScannerType_G_fReturn: %s\n",&scans[index].pcStreamBuf[scans[index].preambleLen]);
+       }
       if(0 != scans[index].fnkScanResult){
 	(*scans[index].fnkScanResult)(&scans[index]);
       }
@@ -99,11 +109,14 @@ namespace EuMax01
     }
 
     /*Type: im Zweifel immer Float*/
-    if(nStreamScannerType_int == type){
-      scans[this->scanslen].typeToScanFor = nStreamScannerType_int;
-    }else{
-      scans[this->scanslen].typeToScanFor = nStreamScannerType_float;
-    }
+    if(type >= nStreamScannerType_LAST_NUMBER || type < 0)
+      {
+	scans[this->scanslen].typeToScanFor = nStreamScannerType_float;
+      }
+    else
+      {
+	scans[this->scanslen].typeToScanFor = type;
+      }
     scans[this->scanslen].userPnt = userPnt;
     scans[this->scanslen].userID = userID;
     scans[this->scanslen].pcPreamble = preamble;

@@ -171,7 +171,7 @@ static void StreamScannerTest(void)
   int len = 0;
   int ret =0;
   char tmpC;
-  char * testString = (char*)"{\"sr\":{\"posy\":-1.015}}{\"sr\":{\"posx\":0.000,\"posy\":0.000,\"po";
+  char * testString = (char*)"{\"r\":{},\"f\":[1,0,4,4397]}{\"sr\":{\"posy\":-1.015}}{\"sr\":{\"posx\":0.000,\"posy\":0.000,\"po";
 
   StreamScanner ss = StreamScanner();
 
@@ -183,6 +183,14 @@ static void StreamScannerTest(void)
 		0,				\
 		nTinyG_Y,                       \
 		(char*)"\"posy\":",(char*)"}",(char*)",",ssResult);
+
+  ss.addScanner(nStreamScannerType_G_fReturn,	\
+		0,				\
+		nTinyG_Y,                       \
+		(char*)"\"f\":[",\
+		(char*)"]",\
+		(char*)"]",\
+		ssResult);
 
   len = strlen(testString);
 
