@@ -37,14 +37,12 @@ namespace EuMax01
       if(0 != scans[index].fnkScanResult){
 	(*scans[index].fnkScanResult)(&scans[index]);
       }
-      scans[index].state = nStreamScannerState_payload;
       resetScan(index);
     }else{
       scans[index].pcStreamBuf[scans[index].len] = c;
       scans[index].len++;
     }
     if(scans[index].len>=this->maxPayloadLen){
-      scans[index].state = nStreamScannerState_payload;
       resetScan(index);
     }
   }
