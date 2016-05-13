@@ -20,7 +20,7 @@ Bastian Ruppert
 namespace EuMax01
 {
 
-  static void streamScanResult(struct StreamScanner_t * ps)
+  void ExaktG::streamScanResult(struct StreamScanner_t * ps)
   {
     printf("StreamScanner Result Int: %i Float: %f\n",	\
 	   ps->scannedInt, ps->scannedFloat);
@@ -28,8 +28,9 @@ namespace EuMax01
 
   ExaktG::ExaktG(int verbExakt,int verbG):GCtrl(verbG)
   {
-    pr_gcodes = new PollReader(this);
     this->setVerbose(verbExakt);
+    pr_gcodes = new PollReader(this);
+    pt_gcodes = new PollTimer(-1,this);
 
     /*"posx":0.000} oder "posx":0.000,*/
     sScan.addScanner(nStreamScannerType_float,		\
@@ -84,6 +85,11 @@ namespace EuMax01
     return this->pr_gcodes;
   }
 
+  PollTimer * ExaktG::getPollTimer(void)
+  {
+    return this->pt_gcodes;
+  }
+
   void ExaktG::setCoordinatesRelative(void)
   {
     GCtrl.cmdG((char*)"G91");
@@ -94,22 +100,40 @@ namespace EuMax01
     GCtrl.cmdG((char*)"G90");
   }
 
+  void ExaktG::pollTimerExpired(long time)
+  {
+    static int counter = 0;
+    counter++;
+    printf("ExaktG PollTimer Expired\n");
+    if(counter==2)
+      {
+	printf("ExaktG PollTimer Zeit verändern\n");
+	this->pt_gcodes->timeout = 500;
+      }
+    if(counter>=4)
+      {
+	printf("ExaktG PollTimer Zeit aus\n");
+	this->pt_gcodes->timeout = -1;
+      }
+  }
+
   void ExaktG::pollReadEvent(PollSource * s)
   {
     char buf[1024];
     int buflen = 1024;
     int len = 0;
-    //int ret = 0;
-    //sleep(1);
+
     memset(buf, 0, 1024);
     buf[1023] = '\n';
-    //printf("###\n");
+
     len = read(s->thePollfd.fd,buf,buflen-1);
     if(len){
       for(int i = 0;i<len;i++){
 	this->sScan.scan(buf[i]);
       }
-      printf("%s",buf);
+      if(verbose){
+	printf("%s",buf);
+      }
     }
   }
 }

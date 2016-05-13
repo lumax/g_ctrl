@@ -32,6 +32,7 @@ public:
   virtual void pollTimerExpired(long us);
   int poll();
   void addPollReader(PollReader * pPR);
+  void addPollTimer(PollTimer * pPT);
 
 private:
   int bufLen;
@@ -59,6 +60,11 @@ int App::poll()
 void App::addPollReader(PollReader * pPR)
 {
   this->pm->addSource(pPR);
+}
+
+void App::addPollTimer(PollTimer * pPT)
+{
+  this->pm->addTimer(pPT);
 }
 
 void App::pollReadEvent(PollSource * ps)
@@ -104,8 +110,8 @@ int main(int argc, char *argv[])
     {
       pExaktG->setFD(pG->getFd());
       pApp->addPollReader(pExaktG->getPollReader());
+      pApp->addPollTimer(pExaktG->getPollTimer());
     }
-
 
   ret = pApp->poll();
   printf("main_gctrl App poll returns: %i\n",ret);
