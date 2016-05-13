@@ -32,6 +32,7 @@ namespace EuMax01
     int len;
     int scannedInt;
     float scannedFloat;
+    int scannedG_F[4];
     void (*fnkScanResult)(struct StreamScanner_t *);
   };
 

@@ -158,11 +158,19 @@ static void ssResult(struct StreamScanner_t * ps)
 
   if(nTinyG_Y == ps->userID){
     Axis = (char*)"Y-Achse";
-  }else{
+    printf("%s: %.3f\n",Axis,ps->scannedFloat);
+  }else if(nTinyG_X == ps->userID){
     Axis = (char*)"X-Achse";
+    printf("%s: %.3f\n",Axis,ps->scannedFloat);
+  }else if(42 == ps->userID){
+    printf("ssResult for G_F :%i %i %i %i\n",	\
+	   ps->scannedG_F[0],			\
+	   ps->scannedG_F[1],			\
+	   ps->scannedG_F[2],			\
+	   ps->scannedG_F[3]);
+  }else{
+    printf("ssResult: unknown userID\n");
   }
-
-  printf("%s: %.3f\n",Axis,ps->scannedFloat);
 }
 
 static void StreamScannerTest(void)
@@ -186,7 +194,7 @@ static void StreamScannerTest(void)
 
   ss.addScanner(nStreamScannerType_G_fReturn,	\
 		0,				\
-		nTinyG_Y,                       \
+		42,                       \
 		(char*)"\"f\":[",\
 		(char*)"]",\
 		(char*)"]",\

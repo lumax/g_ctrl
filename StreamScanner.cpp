@@ -42,7 +42,17 @@ namespace EuMax01
 	 scans[index].scannedFloat = -1.0;
        }
        if(nStreamScannerType_G_fReturn == scans[index].typeToScanFor){
-	 printf("nStreamScannerType_G_fReturn: %s\n",&scans[index].pcStreamBuf[scans[index].preambleLen]);
+	 //printf("nStreamScannerType_G_fReturn: %s\n",&scans[index].pcStreamBuf[scans[index].preambleLen]);
+	 char * pcTmp = 0;
+	 pcTmp = &scans[index].pcStreamBuf[scans[index].preambleLen];
+	 for(int i=0;i<4;i++){
+	   if(pcTmp)
+	     {
+	       scans[index].scannedG_F[i] = atoi(pcTmp);
+	     }
+	   pcTmp = strpbrk(pcTmp,",");
+	   pcTmp++;
+	 }
        }
       if(0 != scans[index].fnkScanResult){
 	(*scans[index].fnkScanResult)(&scans[index]);
